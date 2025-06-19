@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Menfess Bot Telegram</title>
+  <style>
+    @font-face {
+      font-family: 'Cocon';
+      src: url('Cocon.ttf') format('truetype');
+    }
+
+    body {
+      font-family: 'Cocon', 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      text-align: center;
+      padding: 50px 20px;
+    }
+    h1 {
+      color: #2b2b2b;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    p {
+      font-size: 1.1em;
+      color: #555;
+      max-width: 600px;
+      margin: auto;
+      margin-bottom: 20px;
+    }
+    .button {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #0088cc;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    .button:hover {
+      background: #006f9c;
+    }
+    .menu {
+      margin-top: 30px;
+    }
+    .menu button {
+      background-color: #eee;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 1em;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .menu button:hover {
+      background-color: #ddd;
+    }
+    .instructions {
+      display: none;
+      text-align: left;
+      max-width: 700px;
+      margin: 20px auto;
+      background: #fff;
+      border: 1px solid #ddd;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    footer {
+      margin-top: 60px;
+      font-size: 0.9em;
+      color: #999;
+    }
+  </style>
+  <script>
+    function showInstructions(id) {
+      document.querySelectorAll('.instructions').forEach(el => el.style.display = 'none');
+      document.getElementById(id).style.display = 'block';
+    }
+  </script>
+</head>
+<body>
+  <h1>📬 Menfess Bot Telegram</h1>
+  <p>
+    Skrip open-source untuk membuat bot Telegram pengirim pesan anonim ke channel.<br>
+    Sesuai untuk komunitas, pengakuan, atau curhat bebas identitas!
+  </p>
+
+  <a class="button" href="https://github.com/aesneverhere/menfess-bot">🚀 Lihat Repo GitHub</a>
+
+  <div class="menu">
+    <p><strong>Ingin menjalankan bot ini?</strong> Pilih platform kamu:</p>
+    <button onclick="showInstructions('termux')">📱 Termux</button>
+    <button onclick="showInstructions('replit')">💻 Replit</button>
+    <button onclick="showInstructions('gitpod')">☁️ Gitpod</button>
+  </div>
+
+  <div id="termux" class="instructions">
+    <h3>📱 Deploy di Termux</h3>
+    <pre>
+pkg update && pkg upgrade
+pkg install git python
+git clone https://github.com/aesneverhere/menfess-bot
+cd menfess-bot
+bash setup.sh
+python main.py
+    </pre>
+  </div>
+
+  <div id="replit" class="instructions">
+    <h3>💻 Deploy di Replit</h3>
+    <ol>
+      <li>Kunjungi: <a href="https://replit.com" target="_blank">https://replit.com</a></li>
+      <li>Import repo: <code>https://github.com/aesneverhere/menfess-bot</code></li>
+      <li>Masuk ke Shell ➜ Jalankan: <code>bash setup.sh</code></li>
+      <li>Tambahkan keep-alive & UptimeRobot (opsional)</li>
+    </ol>
+  </div>
+
+  <div id="gitpod" class="instructions">
+    <h3>☁️ Deploy di Gitpod</h3>
+    <ol>
+      <li>Buka: <a href="https://gitpod.io/#https://github.com/aesneverhere/menfess-bot" target="_blank">Gitpod Link</a></li>
+      <li>Terminal otomatis terbuka ➜ Jalankan: <code>bash setup.sh</code></li>
+    </ol>
+  </div>
+
+  <footer>
+    Dibuat oleh <a href="https://t.me/aesneverhere">@aesneverhere</a> — 2025 • MIT License
+  </footer>
+</body>
+</html>
