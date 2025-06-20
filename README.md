@@ -1,26 +1,44 @@
-# 📬 Menfess Bot Telegram
+# 🤖 Menfess Bot Telegram - by @aesneverhere
 
-Bot Telegram open-source yang memungkinkan pengguna mengirim pesan secara anonim ke sebuah channel.  
-Kompatibel dengan Replit, Termux, Gitpod, dan VPS.
-
----
-
-## ✨ Fitur Utama
-
-- Kirim pesan sebagai anonim atau tampilkan username
-- Pilih apakah ingin menerima balasan pribadi
-- Tambahkan hashtag dan gender (opsional)
-- Kirim pesan teks maupun gambar
-- Dapat di-host di berbagai platform
-- Landing page dari GitHub Pages
+Bot Telegram anonim yang memungkinkan pengguna mengirimkan pesan rahasia (menfess) ke channel dengan sistem preferensi, reply, hashtag, dan berbagai fitur lainnya.
 
 ---
 
-## 🛠 Cara Pakai
+## 🚀 Fitur Utama
 
-### Jalankan via Git:
+- 🔒 **Anonim Menfess** — kirim pesan tanpa identitas ke channel
+- 🎯 **Preferensi User** — gender, umur, domisili, dll
+- 💬 **Sistem Reply Otomatis** — balas pesan menfess langsung via bot
+- 🔎 **Pencarian Hashtag** — cari menfess berdasarkan topik (#cinta, #galau, dll)
+- 📊 **Statistik & Voting** — lihat siapa yang aktif dan paling banyak kirim menfess
+- 🧠 **Auto Moderasi** — blokir spam, kata kasar, dan pelanggaran lainnya
+- 🖼️ **Dukungan Media** — bisa kirim foto, video, stiker, dan dokumen
+- 💾 **Backup & Restore** — simpan preferensi user secara lokal
+- 🌐 **Fallback Database** — pakai MongoDB atau database lokal
+- 🔧 **Struktur Modular** — anti-crash, setiap fitur terpisah
+- ⚙️ **Maintenance Otomatis** (CI/CD) — linting, audit keamanan, auto update dependency
+
+---
+
+## 🛠️ Teknologi yang Digunakan
+
+- [Pyrogram](https://docs.pyrogram.org/) – Bot API
+- Python 3.11+
+- SQLite / JSON – local storage fallback
+- GitHub Actions – otomatisasi testing, linting, dan security audit
+- (Opsional) MongoDB – penyimpanan online
+
+---
+
+## 📦 Setup Cepat
 
 ```bash
-git clone https://github.com/aesneverhere/menfess-bot.git
+# Clone repo
+git clone https://github.com/namamu/menfess-bot.git
 cd menfess-bot
-bash setup.sh
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Jalankan bot
+python main.py
