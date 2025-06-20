@@ -1,6 +1,7 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from data.state import user_preferences, total_users
+from utils.logger import log_event
 
 @Client.on_message(filters.command("start") & filters.private)
 async def start_handler(client, message: Message):
@@ -49,3 +50,4 @@ async def help_handler(client, message: Message):
         "Ketik /start untuk memulai pengaturan.",
         quote=True
     )
+    await log_event(client, f"📥 New /start from @{message.from_user.username or 'no_username'} ({user_id})")

@@ -68,3 +68,5 @@ async def menfess_handler(client, message: Message):
     except Exception as e:
         await message.reply(f"❌ Gagal mengirim pesan: {e}")
         print(f"Error: {e}")
+    await log_event(client, f"✅ Menfess sent by {user_id} ({identity}) to {CHANNEL_USERNAME}")
+    await log_event(client, f"❌ Error sending menfess from {user_id}:\n{e}")
