@@ -1,3 +1,4 @@
+# This file handles logging to LOG_CHAT_ID
 from config import LOG_CHAT_ID
 
 async def log_event(client, text):
