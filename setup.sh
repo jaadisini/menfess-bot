@@ -1,10 +1,25 @@
 #!/bin/bash
 
 clear
+
 echo "============================================="
 echo "🤖 MENFESS TELEGRAM BOT SETUP"
-echo "📦 Dibuat oleh: @aesneverhere"
-echo "🔗 Repo GitHub: https://github.com/aesneverhere/menfess-bot"
+echo "============================================="
+
+# ASCII Art Banner
+echo -e "
+\033[1;35m
+ __  __ ______ _   _ ______ ______ _____  _____  _____ 
+|  \/  |  ____| \ | |  ____|  ____|  __ \|  __ \|  __ \\
+| \  / | |__  |  \| | |__  | |__  | |__) | |__) | |  | |
+| |\/| |  __| | . \` |  __| |  __| |  _  /|  _  /| |  | |
+| |  | | |____| |\  | |____| |____| | \ \| | \ \| |__| |
+|_|  |_|______|_| \_|______|______|_|  \_\_|  \_\_____/ \033[0m
+"
+
+echo -e "\033[1;36mDibuat oleh: @aesneverhere\033[0m"
+echo -e "\033[1;36mDeskripsi : Bot Telegram untuk mengirim pesan anonim ke channel.\033[0m"
+echo -e "\033[1;36mRepo GitHub: https://github.com/aesneverhere/menfess-bot\033[0m"
 echo "============================================="
 
 pkg update -y 2>/dev/null || sudo apt update -y
