@@ -1,112 +1,55 @@
 import asyncio
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from data.state import user_preferences, blacklist, pending_replies, user_message_map, stats
 from config import BOT_USERNAME, CHANNEL_USERNAME
-from data.state import user_preferences, blacklist, sent_users, total_users, user_message_map
+from utils.logger import log_event
 
 @Client.on_message(filters.private & filters.text)
-async def handle_text_message(client, message: Message):
-    user_id = message.from_user.id
-
-    if user_id in user_preferences and user_preferences[user_id].get("hashtag") == "pending":
-        user_preferences[user_id]["hashtag"] = message.text.strip()
-        await message.reply(f"✅ Hashtag berhasil disimpan: {message.text.strip()}")
-        return
-
-    await menfess_handler(client, message)
-
-@Client.on_message(filters.private & filters.photo)
-async def menfess_handler(client, message: Message):
-    user_id = message.from_user.id
-    total_users.add(user_id)
-
-    if user_id in blacklist:
-        await message.reply("⛔ Kamu tidak diizinkan mengirim pesan ke bot ini.")
-        return
-
-    if user_id in sent_users:
-        await message.reply("⚠️ Kamu sudah mengirim pesan. Mohon tunggu sebelum mengirim lagi.")
-        return
-
-    if message.text and len(message.text) > 4096:
-        await message.reply("❗ Pesan terlalu panjang untuk dikirim. Maksimal 4096 karakter.")
-        return
-
-    await message.reply("Pesan kamu sedang dikirim ke channel...")
-
-    try:
-        pref = user_preferences.get(user_id, {"anon": True, "allow_reply": False, "gender": "Tidak disebutkan", "hashtag": ""})
-        username = f"@{message.from_user.username}" if message.from_user.username else "(Tanpa username)"
-        identity = "Anonim" if pref["anon"] else username
-        gender = pref.get("gender", "Tidak disebutkan")
-        hashtag = pref.get("hashtag", "")
-
-        additional_caption = f"\n\n📢 Pesan ini dikirim melalui @{BOT_USERNAME}"
-
-        reply_markup = None
-        if pref["allow_reply"] and not pref["anon"] and message.from_user.username:
-            reply_markup = InlineKeyboardMarkup([[
-                InlineKeyboardButton("✉️ Kirim pesan ke pengirim", url=f"https://t.me/{message.from_user.username}")
-            ]])
-
-        if message.photo:
-            caption = message.caption or "(Tanpa keterangan)"
-            full_caption = f"📸 Pesan dari {identity} ({gender}) {hashtag}:\n\n{caption}{additional_caption}"
-            sent_msg = await client.send_photo(CHANNEL_USERNAME, message.photo.file_id, caption=full_caption, reply_markup=reply_markup)
-        else:
-            full_caption = f"📩 Pesan dari {identity} ({gender}) {hashtag}:\n\n{message.text}{additional_caption}"
-            sent_msg = await client.send_message(CHANNEL_USERNAME, text=full_caption, reply_markup=reply_markup)
-
-        if sent_msg:
-            user_message_map[sent_msg.id] = (user_id, pref["allow_reply"], message.from_user.username)
-
-        await message.reply("✅ Pesan berhasil dikirim!")
-        sent_users.add(user_id)
-        await asyncio.sleep(60)
-        sent_users.remove(user_id)
-
-    except Exception as e:
-        await message.reply(f"❌ Gagal mengirim pesan: {e}")
-        print(f"Error: {e}")
-    await log_event(client, f"✅ Menfess sent by {user_id} ({identity}) to {CHANNEL_USERNAME}")
-    await log_event(client, f"❌ Error sending menfess from {user_id}:\n{e}")
-
-    @Client.on_message(filters.private & filters.text)
-async def handle_reply(client, message: Message):
-    user_id = message.from_user.id
-
-    # Jika sedang dalam mode balas
-    if user_id in pending_replies:
-        target_msg_id = pending_replies.pop(user_id)
-        original_data = user_message_map.get(target_msg_id)
-
-        if not original_data:
-            await message.reply("⚠️ Tidak bisa menemukan pengirim asli dari menfess ini.")
-            return
-
-        target_user_id, allow_reply, username = original_data
-
-        # Cek apakah boleh dibalas
-        if not allow_reply:
-            await message.reply("❌ Pengirim tidak mengizinkan balasan.")
-            return
-
+async def txt(c,m:Message):
+    uid=m.from_user.id
+    if uid in pending_replies:
+        target=int(pending_replies.pop(uid))
+        od=user_message_map.get(str(target))
+        if not od: return await m.reply("❌ cannot find original sender")
+        tuid, allow, uname = od
+        if not allow: return await m.reply("🚫 original doesn't allow reply")
         try:
-            await client.send_message(
-                target_user_id,
-                f"📨 Kamu menerima balasan atas menfess kamu:\n\n{message.text}"
-            )
-            await message.reply("✅ Balasan berhasil dikirim!")
-        except Exception as e:
-            await message.reply("⚠️ Gagal mengirim balasan. Mungkin user sudah block bot.")
+            await c.send_message(tuid, f"💬 Reply for your menfess:\n\n{m.text}")
+            await m.reply("✅ reply sent")
+        except:
+            await m.reply("⚠️ failed sending reply")
+        await log_event(c,f"➰ Reply from {uid} to {tuid}")
+        return
+
+    if user_preferences[uid].get("hashtag")=="pending":
+        user_preferences[uid]["hashtag"]=m.text.strip()
+        return await m.reply(f"✅ hashtag saved: {m.text}")
+
+    if uid in blacklist: return await m.reply("⛔ blacklisted")
+    pref=user_preferences.get(uid,{}); hs=pref.get("hashtag","")
+    pref["hashtag"]=""
+
+    await m.reply("⏳ sending to channel...")
+    identity = "Anonim" if pref.get("anon",True) else f"@{m.from_user.username}"
+    gender=pref.get("gender", "?")
+    caption=f"{hs}\n📤 from {identity} ({gender})"
+    btns=[InlineKeyboardButton("💬 Reply", callback_data=f"reply_{m.message_id}")]
+    if pref.get("allow_reply") and not pref.get("anon"):
+        btns.append(InlineKeyboardButton("✉️ DM Sender", url=f"https://t.me/{m.from_user.username}"))
+    keyboard=InlineKeyboardMarkup([btns])
+
+    sent=None
+    if m.photo:
+        sent=await c.send_photo(CHANNEL_USERNAME, m.photo.file_id, caption=caption, reply_markup=keyboard)
     else:
-        await menfess_handler(client, message)
+        sent=await c.send_message(CHANNEL_USERNAME, caption, reply_markup=keyboard)
 
-    InlineKeyboardButton("💬 Balas", callback_data=f"reply_{message.id}")
-    buttons = []
-    if pref["allow_reply"] and not pref["anon"] and message.from_user.username:
-    buttons.append(InlineKeyboardButton("✉️ Kirim pesan ke pengirim", url=f"https://t.me/{message.from_user.username}"))
-    buttons.append(InlineKeyboardButton("💬 Balas", callback_data=f"reply_{message.id}"))
+    if sent:
+        user_message_map[str(sent.message_id)] = [uid, pref.get("allow_reply", False), m.from_user.username]
+        stats["total_menfess"]+=1
+        if hs: stats["popular_hashtags"][hs]=stats["popular_hashtags"].get(hs,0)+1
 
-    reply_markup = InlineKeyboardMarkup([buttons])
-
+    await m.reply("✅ sent.")
+    await log_event(c,f"📤 Menfess {sent.message_id} by {uid}")
+    await asyncio.sleep(60)

@@ -39,7 +39,7 @@ if [ ! -f .env ]; then
     read -p "Masukkan BOT_USERNAME (tanpa @): " BOT_USERNAME
     read -p "Masukkan CHANNEL_USERNAME (pakai @): " CHANNEL_USERNAME
     read -p "Masukkan ADMIN_ID (angka): " ADMIN_ID
-    read -p "Masukkan LOG_CHAT_ID (bisa ID grup/channel, contoh: -1001234567890): " LOG_CHAT_ID
+    read -p "Masukkan LOG_CHAT_ID (pakai -100...): " LOG_CHAT_ID
 
     cat <<EOF > .env
 API_ID=$API_ID
@@ -48,6 +48,7 @@ BOT_TOKEN=$BOT_TOKEN
 BOT_USERNAME=$BOT_USERNAME
 CHANNEL_USERNAME=$CHANNEL_USERNAME
 ADMIN_ID=$ADMIN_ID
+LOG_CHAT_ID=$LOG_CHAT_ID
 EOF
 
     echo "✅ File .env berhasil dibuat."
