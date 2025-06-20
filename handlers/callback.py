@@ -1,5 +1,6 @@
 from pyrogram import Client
 from pyrogram.types import CallbackQuery
+from data.state import pending_replies, user_message_map
 from data.state import user_preferences
 
 @Client.on_callback_query()
@@ -33,3 +34,8 @@ async def callback_handler(client, callback_query: CallbackQuery):
     elif data == "add_hashtag":
         pref["hashtag"] = "pending"
         await callback_query.message.reply("Kirimkan hashtag yang ingin kamu gunakan (contoh: #curhat, #menfess)")
+    elif data.startswith("reply_"):
+        target_msg_id = int(data.split("_")[1])
+        pending_replies[callback_query.from_user.id] = target_msg_id
+    await callback_query.message.reply("💬 Silakan ketik balasan kamu untuk menfess ini.")
+    await callback_query.answer()

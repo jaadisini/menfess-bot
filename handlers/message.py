@@ -70,3 +70,43 @@ async def menfess_handler(client, message: Message):
         print(f"Error: {e}")
     await log_event(client, f"✅ Menfess sent by {user_id} ({identity}) to {CHANNEL_USERNAME}")
     await log_event(client, f"❌ Error sending menfess from {user_id}:\n{e}")
+
+    @Client.on_message(filters.private & filters.text)
+async def handle_reply(client, message: Message):
+    user_id = message.from_user.id
+
+    # Jika sedang dalam mode balas
+    if user_id in pending_replies:
+        target_msg_id = pending_replies.pop(user_id)
+        original_data = user_message_map.get(target_msg_id)
+
+        if not original_data:
+            await message.reply("⚠️ Tidak bisa menemukan pengirim asli dari menfess ini.")
+            return
+
+        target_user_id, allow_reply, username = original_data
+
+        # Cek apakah boleh dibalas
+        if not allow_reply:
+            await message.reply("❌ Pengirim tidak mengizinkan balasan.")
+            return
+
+        try:
+            await client.send_message(
+                target_user_id,
+                f"📨 Kamu menerima balasan atas menfess kamu:\n\n{message.text}"
+            )
+            await message.reply("✅ Balasan berhasil dikirim!")
+        except Exception as e:
+            await message.reply("⚠️ Gagal mengirim balasan. Mungkin user sudah block bot.")
+    else:
+        await menfess_handler(client, message)
+
+    InlineKeyboardButton("💬 Balas", callback_data=f"reply_{message.id}")
+    buttons = []
+    if pref["allow_reply"] and not pref["anon"] and message.from_user.username:
+    buttons.append(InlineKeyboardButton("✉️ Kirim pesan ke pengirim", url=f"https://t.me/{message.from_user.username}"))
+    buttons.append(InlineKeyboardButton("💬 Balas", callback_data=f"reply_{message.id}"))
+
+    reply_markup = InlineKeyboardMarkup([buttons])
+
